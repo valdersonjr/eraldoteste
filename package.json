@@ -1,0 +1,11 @@
+{
+  "name": "lunar-lander",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Jogo estilo Lunar Lander, feito com Node puro (zero dependências).",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  }
+}
