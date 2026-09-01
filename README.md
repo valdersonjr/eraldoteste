@@ -7,7 +7,7 @@ por dentro, não usar uma engine.
 ## Rodar
 
 ```bash
-npm run serve
+npm start
 # abra http://localhost:3000
 ```
 
