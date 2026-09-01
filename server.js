@@ -8,19 +8,13 @@
 
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 const PORTA = process.env.PORT ?? 3000;
 
-// Em serverless (Vercel) o arquivo pode ser executado a partir de um diretório
-// diferente do que ele ocupa no repositório, então testamos os dois candidatos
-// e ficamos com o primeiro que realmente contém o index.html.
-const CANDIDATOS = [
-  path.join(import.meta.dirname, 'public'),
-  path.join(process.cwd(), 'public'),
-];
-const RAIZ = CANDIDATOS.find((dir) => existsSync(path.join(dir, 'index.html'))) ?? CANDIDATOS[0];
+// Na Vercel esta pasta só existe dentro da função porque o vercel.json a
+// declara em includeFiles — o file tracing não enxerga um readFile dinâmico.
+const RAIZ = path.join(import.meta.dirname, 'public');
 
 // O browser precisa saber "o que" ele esta recebendo. Sem o Content-Type certo,
 // ele se recusa a executar os módulos JavaScript.
@@ -51,7 +45,7 @@ const servidor = createServer(async (req, res) => {
     res.end(conteudo);
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end(`404 - não encontrado\nprocurado: ${arquivo}\nraiz: ${RAIZ}`);
+    res.end('404 - não encontrado');
   }
 });
 
