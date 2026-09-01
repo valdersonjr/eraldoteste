@@ -5,21 +5,30 @@
 
 * { box-sizing: border-box; }
 
+html, body {
+  /* No celular, arrastar o dedo puxaria a página (e o "pull to refresh" do
+     Chrome) no meio de uma manobra. Isso trava o jogo na tela. */
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   gap: 1rem;
   background: #07080d;
   color: var(--tinta);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 main {
   display: grid;
   gap: 0.9rem;
   padding: 1.5rem 1rem;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
   width: 100%;
   justify-items: center;
 }
@@ -32,6 +41,9 @@ main {
   background: #000;
   /* o canvas precisa receber o foco do teclado sem mostrar contorno feio */
   outline: none;
+  /* manipulation desliga o zoom por toque duplo, que no meio do jogo dispara
+     sozinho; o pinça-para-ampliar continua funcionando. */
+  touch-action: manipulation;
 }
 
 .ajuda {
@@ -47,4 +59,120 @@ kbd {
   border-radius: 4px;
   padding: 1px 6px;
   color: var(--tinta);
+}
+
+/* --- Controles de toque ---------------------------------------------------
+   Escondidos por padrão: em um computador com teclado eles só ocupariam
+   espaço. Aparecem apenas onde não há mouse e o ponteiro e "grosso" (o dedo). */
+
+.controles { display: none; }
+
+@media (hover: none) and (pointer: coarse) {
+  /* Duas faixas: o canvas ocupa e centraliza a sobra, os controles ficam
+     colados na base -- que e onde o polegar alcança sem reposicionar a mão. */
+  main {
+    min-height: 100dvh;
+    grid-template-rows: 1fr auto;
+    align-items: center;
+  }
+
+  .controles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: min(100%, 960px);
+  }
+
+  /* Sem teclado, a dica de teclas vira ruído. */
+  .ajuda { display: none; }
+}
+
+.grupo {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.controles button {
+  width: 4.5rem;
+  height: 4.5rem;
+  border: 1px solid #333a4d;
+  border-radius: 50%;
+  background: #141926;
+  color: var(--tinta);
+  font: inherit;
+  font-size: 1.4rem;
+  /* none (e nao manipulation) porque aqui o dedo NAO deve rolar nem ampliar
+     nada: qualquer gesto sobre o botao pertence ao jogo. */
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.controles button:active {
+  background: #26304a;
+  border-color: #4a5878;
+}
+
+.controles .motor {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-color: #3c5a44;
+  background: #16241b;
+  color: #7cff9e;
+}
+
+.controles .reiniciar {
+  width: 3rem;
+  height: 3rem;
+  font-size: 0.95rem;
+  color: #7b849b;
+}
+
+/* Celular deitado: a tela inteira e larga e baixa. O canvas passa a ser
+   limitado pela ALTURA, e os controles flutuam sobre os cantos de baixo para
+   nao roubar espaço vertical do jogo. */
+@media (orientation: landscape) and (pointer: coarse) {
+  body {
+    min-height: 0;
+    height: 100dvh;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  main {
+    padding: 0;
+    position: relative;
+  }
+
+  #jogo {
+    width: auto;
+    height: 100dvh;
+    max-width: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .controles {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 0 max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-bottom))
+      max(1rem, env(safe-area-inset-right));
+    align-items: flex-end;
+  }
+
+  .controles button {
+    /* translúcidos: o terreno continua visível por baixo */
+    background: #141926cc;
+  }
+
+  /* No meio da faixa de baixo, o R cobriria o terreno e as plataformas bem na
+     hora do pouso. O topo-centro e a única parte da tela que o HUD deixa livre. */
+  .controles .reiniciar {
+    position: fixed;
+    top: max(0.5rem, env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .controles .motor { background: #16241bcc; }
 }

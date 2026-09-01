@@ -13,6 +13,10 @@ npm start
 
 Controles: `←` `→` giram · `↑` ou `espaço` liga o motor · `R` reinicia.
 
+No celular, os mesmos comandos aparecem como botões na tela — eles surgem
+sozinhos em aparelhos sem mouse e somem no computador. Dá para segurar o motor
+e girar ao mesmo tempo, com dois dedos.
+
 ## Como está dividido
 
 O Node aqui só serve arquivos; o jogo roda no navegador, dentro de um `<canvas>`.

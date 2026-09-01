@@ -2,13 +2,30 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- viewport-fit=cover: deixa a página usar a área sob o notch; o CSS
+         devolve o espaço com env(safe-area-inset-*) onde faz falta. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07080d" />
     <title>Lunar Lander</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <main>
       <canvas id="jogo"></canvas>
+
+      <!-- Controles de toque. Cada botao só declara QUAL acao dispara; quem
+           traduz isso em estado do jogo e o input.js, igual ao teclado. -->
+      <div class="controles">
+        <div class="grupo">
+          <button type="button" data-acao="girarEsquerda" aria-label="Girar para a esquerda">&#9664;</button>
+          <button type="button" data-acao="girarDireita" aria-label="Girar para a direita">&#9654;</button>
+        </div>
+
+        <button type="button" class="reiniciar" data-acao="reiniciar" aria-label="Reiniciar">R</button>
+
+        <button type="button" class="motor" data-acao="empuxo" aria-label="Ligar o motor">&#9650;</button>
+      </div>
+
       <p class="ajuda">
         <kbd>&larr;</kbd> <kbd>&rarr;</kbd> giram &nbsp;&middot;&nbsp;
         <kbd>&uarr;</kbd> ou <kbd>espaço</kbd> liga o motor &nbsp;&middot;&nbsp;
