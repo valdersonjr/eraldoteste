@@ -17,6 +17,15 @@ No celular, os mesmos comandos aparecem como botões na tela — eles surgem
 sozinhos em aparelhos sem mouse e somem no computador. Dá para segurar o motor
 e girar ao mesmo tempo, com dois dedos.
 
+## O que muda a cada tentativa
+
+Nada começa igual: posição, deriva, inclinação e combustível iniciais são
+sorteados, além do terreno e das plataformas. E há asteroides vagando pelo céu
+— cada pouso bem-sucedido sobe o nível e traz mais um, até o teto.
+
+As faixas de sorteio ficam todas em `js/config.js` (`INICIO` e `ASTEROIDES`).
+Mexer nelas é a forma mais rápida de deixar o jogo mais fácil ou mais cruel.
+
 ## Como está dividido
 
 O Node aqui só serve arquivos; o jogo roda no navegador, dentro de um `<canvas>`.
@@ -27,8 +36,10 @@ public/
   index.html         a página: um <canvas> e o script de entrada
   style.css          visual da página em volta do jogo
   js/
+    aleatorio.js     sorteios que afetam a jogabilidade
+    asteroids.js     as pedras: sorteio, movimento e colisão com a nave
     config.js        TODOS os números do jogo (gravidade, empuxo, limites)
-    input.js         teclado -> "ações" (empuxo, girarEsquerda, ...)
+    input.js         teclado e toque -> "ações" (empuxo, girarEsquerda, ...)
     terrain.js       gera o relevo e as plataformas; diz a altura do chão em X
     lander.js        estado e física da nave + regra de pouso/batida
     render.js        desenha tudo no canvas (só lê o estado, nunca muda)

@@ -10,6 +10,7 @@ import { FISICA, NAVE } from './config.js';
 import { iniciarInput, input } from './input.js';
 import { criarTerreno } from './terrain.js';
 import { criarNave, atualizarNave, verificarColisao } from './lander.js';
+import { criarAsteroides, atualizarAsteroides, asteroideQueAtingiu } from './asteroids.js';
 import { configurarCanvas, desenhar } from './render.js';
 
 // Passo fixo de física: 1/60 de segundo.
@@ -26,11 +27,15 @@ const jogo = {
   estado: 'voando', // 'voando' | 'pousou' | 'explodiu'
   nave: criarNave(),
   terreno: criarTerreno(),
+  asteroides: [],
   particulas: [],
   mensagem: '',
   pontos: 0,
   tentativas: 1,
+  nivel: 1, // sobe a cada pouso; e o que controla quantos asteroides aparecem
 };
+
+jogo.asteroides = criarAsteroides(jogo.nivel, jogo.nave, jogo.terreno);
 
 function reiniciar({ terrenoNovo }) {
   jogo.estado = 'voando';
@@ -39,16 +44,30 @@ function reiniciar({ terrenoNovo }) {
   jogo.mensagem = '';
   jogo.tentativas += 1;
   if (terrenoNovo) jogo.terreno = criarTerreno();
+
+  // Depois da nave e do terreno: o sorteio precisa saber de onde manter
+  // distância e até onde o relevo sobe.
+  jogo.asteroides = criarAsteroides(jogo.nivel, jogo.nave, jogo.terreno);
 }
 
 // --- Atualizacao -----------------------------------------------------------
 
 function atualizar(dt) {
   atualizarParticulas(dt);
+  // Os asteroides seguem se movendo mesmo com o jogo parado: a tela de fim
+  // continua viva em vez de virar uma foto.
+  atualizarAsteroides(jogo.asteroides, jogo.terreno, dt);
 
-  if (jogo.estado !== 'voando') return; // parado: só as partículas continuam
+  if (jogo.estado !== 'voando') return; // parado: só o cenário continua
 
   atualizarNave(jogo.nave, input, dt);
+
+  // O asteroide vem antes do terreno: se os dois acontecem no mesmo quadro, foi
+  // a pedra que causou a queda, e e isso que o jogador precisa ler.
+  if (asteroideQueAtingiu(jogo.nave, jogo.asteroides)) {
+    resolverColisao({ tipo: 'crash', motivo: 'Um asteroide acertou a nave.' });
+    return;
+  }
 
   const colisao = verificarColisao(jogo.nave, jogo.terreno);
   if (colisao) resolverColisao(colisao);
@@ -60,6 +79,7 @@ function resolverColisao(colisao) {
 
     jogo.estado = 'pousou';
     jogo.pontos += ganho;
+    jogo.nivel += 1; // a próxima tentativa vem com mais um asteroide
     jogo.mensagem = `+${ganho} pontos  (x${colisao.plataforma.multiplicador} da plataforma, ${Math.round(jogo.nave.combustivel)} de combustível)`;
 
     // Assenta a nave visualmente em cima da plataforma.

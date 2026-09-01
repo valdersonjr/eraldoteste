@@ -6,17 +6,26 @@
 // entrada e desenho separados e o que impede um jogo de virar espaguete.
 // ---------------------------------------------------------------------------
 
-import { FISICA, MUNDO, NAVE, POUSO } from './config.js';
+import { FISICA, INICIO, MUNDO, NAVE, POUSO } from './config.js';
+import { entre, sinal } from './aleatorio.js';
 import { alturaDoTerreno, plataformaEm } from './terrain.js';
 
+/**
+ * Uma nave nova, com o começo sorteado dentro das faixas do INICIO.
+ * Duas tentativas nunca comecam iguais: posição, deriva, inclinação e até o
+ * tanque mudam.
+ */
 export function criarNave() {
   return {
-    x: NAVE.inicio.x,
-    y: NAVE.inicio.y,
-    vx: NAVE.inicio.vx,       // velocidade horizontal, px/s
-    vy: NAVE.inicio.vy,       // velocidade vertical, px/s (positivo = descendo)
-    angulo: 0,                // radianos; 0 = nariz apontando para cima
-    combustivel: NAVE.combustivelInicial,
+    x: entre(...INICIO.x),
+    y: entre(...INICIO.y),
+    // Velocidade horizontal, px/s. O módulo vem da faixa (que nunca chega a
+    // zero) e o lado de um sorteio separado -- assim a deriva inicial e sempre
+    // relevante, mas você não sabe para onde.
+    vx: entre(...INICIO.velHorizontal) * sinal(),
+    vy: entre(...INICIO.velVertical),  // px/s, positivo = descendo
+    angulo: entre(...INICIO.angulo),   // radianos; 0 = nariz apontando para cima
+    combustivel: entre(...INICIO.combustivel),
     motorLigado: false,
   };
 }

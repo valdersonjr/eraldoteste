@@ -19,12 +19,43 @@ export const FISICA = {
 };
 
 export const NAVE = {
-  combustivelInicial: 100,
+  tanque: 100, // capacidade; e a referência da barra de combustível no HUD
   largura: 20,
   altura: 24,
-  // De onde a nave comeca. O vx inicial e de propósito: você já nasce
-  // derivando para a direita e precisa corrigir.
-  inicio: { x: 320, y: 90, vx: 20, vy: 0 },
+};
+
+// Cada tentativa sorteia um começo diferente dentro destas faixas. E a mudança
+// que mais muda o jogo: sem um início fixo, não da para decorar uma sequência
+// de comandos -- você tem de ler os instrumentos e reagir ao que veio.
+export const INICIO = {
+  x: [120, MUNDO.largura - 120],
+  y: [70, 150],
+  // Módulo da deriva horizontal. A faixa nao inclui o zero de propósito:
+  // nascer parado seria um começo de graça. O lado e sorteado à parte.
+  velHorizontal: [12, 34],
+  velVertical: [0, 14],
+  angulo: [-0.35, 0.35], // radianos, ~20 graus para cada lado
+  combustivel: [78, 100],
+};
+
+// Os asteroides vagam por uma faixa do céu e crescem em número a cada pouso.
+export const ASTEROIDES = {
+  base: 2,        // quantos no nível 1
+  porNivel: 1,    // quantos entram a cada pouso bem-sucedido
+  maximo: 8,      // teto, senao o céu fecha e vira sorte
+  raio: [9, 20],
+  velocidade: [18, 52],
+  aceleracaoPorNivel: 0.08, // +8% de velocidade por nível
+  // Faixa vertical onde eles ficam, em fração da altura do mundo. O limite de
+  // baixo deixa o corredor final de pouso livre: morrer a 5 px da plataforma
+  // por causa de uma pedra e frustrante, não difícil.
+  faixaY: [0.1, 0.62],
+  // Folga mínima acima do pico mais alto do relevo. Sem ela, um terreno com
+  // montanhas altas teria asteroides ricocheteando dentro da rocha.
+  folgaDoTerreno: 45,
+  // Raio livre em volta da nave no sorteio inicial. Nascer em cima dela seria
+  // uma morte que o jogador não teve como evitar.
+  distanciaSegura: 170,
 };
 
 // Os limites que separam um pouso de uma explosão.

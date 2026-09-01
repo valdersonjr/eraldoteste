@@ -43,6 +43,7 @@ export function desenhar(ctx, jogo) {
 
   desenharEstrelas(ctx);
   desenharTerreno(ctx, jogo.terreno);
+  desenharAsteroides(ctx, jogo.asteroides);
   desenharParticulas(ctx, jogo.particulas);
 
   if (jogo.estado !== 'explodiu') desenharNave(ctx, jogo.nave);
@@ -86,6 +87,35 @@ function desenharTerreno(ctx, terreno) {
     ctx.font = 'bold 12px ui-monospace, monospace';
     ctx.textAlign = 'center';
     ctx.fillText(`x${plataforma.multiplicador}`, (plataforma.x1 + plataforma.x2) / 2, plataforma.y + 16);
+  }
+}
+
+/**
+ * Cada asteroide e um polígono irregular: os raios de cada vértice foram
+ * sorteados uma vez, no asteroids.js, e aqui só sao lidos. Se sorteássemos
+ * aqui, a pedra mudaria de forma 60 vezes por segundo.
+ */
+function desenharAsteroides(ctx, asteroides) {
+  for (const a of asteroides) {
+    ctx.save();
+    ctx.translate(a.x, a.y);
+    ctx.rotate(a.angulo);
+
+    ctx.beginPath();
+    a.forma.forEach((fracao, i) => {
+      const passo = (Math.PI * 2 * i) / a.forma.length;
+      const raio = a.raio * fracao;
+      ctx.lineTo(Math.cos(passo) * raio, Math.sin(passo) * raio);
+    });
+    ctx.closePath();
+
+    ctx.fillStyle = '#2a2f3d';
+    ctx.fill();
+    ctx.strokeStyle = '#9aa3b8';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.restore();
   }
 }
 
@@ -168,7 +198,7 @@ function desenharHUD(ctx, jogo) {
 
   // Barra de combustível
   const largura = 120;
-  const proporcao = nave.combustivel / NAVE.combustivelInicial;
+  const proporcao = nave.combustivel / NAVE.tanque;
 
   ctx.fillStyle = '#6b7488';
   ctx.fillText('COMBUSTÍVEL', 16, 116);
@@ -188,6 +218,8 @@ function desenharHUD(ctx, jogo) {
   ctx.font = '13px ui-monospace, monospace';
   ctx.fillStyle = '#6b7488';
   ctx.fillText(`tentativa ${jogo.tentativas}`, MUNDO.largura - 16, 72);
+  const pedras = jogo.asteroides.length;
+  ctx.fillText(`nível ${jogo.nivel} · ${pedras} asteroide${pedras === 1 ? '' : 's'}`, MUNDO.largura - 16, 92);
 }
 
 function linha(ctx, x, y, rotulo, valor, cor) {
